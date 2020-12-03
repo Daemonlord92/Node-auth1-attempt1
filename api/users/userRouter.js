@@ -16,6 +16,16 @@ router.get('/:id', (req, res) => {
 	.catch(err => res.status(500).json({mes: 'Server Error', err}))
 })
 
- 
+ // ADD ROUTE
+
+ router.post('/signup', (req, res) => {
+ 	let user = req.body
+
+ 	const hash = bcrypt.hashSync(user.password, 5)
+ 	user.password = hash
+ 	User.add(user)
+ 	.then(user => res.status(200).json(user))
+ 	.catch(err => res.status(500).json({mes:'Server Error', err}))
+ })
 
 module.exports = router;
