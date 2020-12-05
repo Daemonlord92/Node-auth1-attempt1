@@ -45,4 +45,46 @@ router.get('/:id', (req, res) => {
  	.catch(err => res.status(500).json({mes:'Server Error', err}))
  })
 
+ // RESTRICTED ROUTES
+
+ router.get('/restricted/users', authenticate, (req, res) => {
+    User
+    .find()
+    .then(users => {
+        res.json(users);
+    })
+    .catch(error => {
+        res.status(500).json(error);
+    })
+})
+
+//LOGOUT ROUTES
+
+ router.get('/logout', (req, res) => {
+    if(req.session) {
+        req.session.destroy(err => {
+            if(err) {
+                res.status(500).json({ error: 'Unable to log out!' })
+            } else {
+                res.status(200).json({ message: 'You are logged out!' })
+            }
+        })
+    } else {
+        res.status(200).json({ message: 'You are logged out!' })
+    }
+})
+
+
+ function authenticate (req, res, next) {
+  try {
+    if(req && req.session && req.session.user) {
+      next();
+    } else {
+      res.status(401).json({ errorMessage: 'Your credentials are invalid'})
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Unable to authenticate'})
+  }
+}
+
 module.exports = router;
